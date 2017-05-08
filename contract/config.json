@@ -1,0 +1,11 @@
+{
+    "private_key_file": "",
+    "certificate_file": "",
+    "port":80,
+    "https_port":443,    
+    "enable_https": true,    
+    "debug": "id",
+    "admin_contract_address": "",
+    "id_contract_address": "",
+    "gas": 1000000
+}
