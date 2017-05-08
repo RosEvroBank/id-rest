@@ -1,0 +1,7 @@
+{
+    "accountId": "",
+    "password": "",
+    "rpc_url": "http://localhost:8545",
+    "secret": "",
+    "expTime": 28800
+}
