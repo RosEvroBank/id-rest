@@ -3,9 +3,9 @@
     "certificate_file": "",
     "port":80,
     "https_port":443,    
-    "enable_https": true,    
+    "enable_https": false,    
     "debug": "id",
-    "admin_contract_address": "",
-    "id_contract_address": "",
+    "admin_contract_address": "0x4f9bd4d2a9ec760d3f3c87c06e3caa53224ea14e",
+    "id_contract_address": "0x69f561b5816fa0a6eab99ac077c2189284f1290d",
     "gas": 1000000
 }
