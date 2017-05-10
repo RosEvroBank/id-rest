@@ -143,7 +143,7 @@ app.get('/waitTx', loadUser,
 });
 
 //Get participants list
-app.get('/id/getParticipantsList', //loadUser,
+app.get('/id/getParticipantsList', loadUser,
   function(req, res){
     console.log('/id/getParticipantsList');
     var participants = idContract.List().valueOf();        
@@ -164,7 +164,7 @@ app.get('/id/getToken', loadUser,
     console.log('/id/getEvent');
     if (req.query.txHash){
       var event = events('events').find({event: 'eTokenGiven', transactionHash: req.query.txHash});      
-      res.status(200).json({token: event.args._token});
+      res.status(200).json({hashtoken: event.args._token});
     } else{
       res.status(500).json({error: 'Parameter <txHash> not found'});
     }
@@ -253,7 +253,13 @@ app.get('/id/RequestP', loadUser,
     console.log(req.query.hash);
     idContract.RequestP(req.query.hash, req.query.token, {gas: params.gas})
     .then(function(result){
-      res.status(200).json({result:result, error:null});
+      idContract.RequestC(req.query.hashtoken, req.query.hash, {gas: params.gas})
+      .then(function(result){
+        res.status(200).json({result:result, error:null});
+      })
+      .catch(function(error){
+      res.status(500).json({ result: null, error: error.message});
+      });
     })
     .catch(function(error){
       res.status(500).json({ result: null, error: error.message});
