@@ -190,6 +190,7 @@ app.post('/id/AddCustomerHash', loadUser,
     console.log("/id/AddCustomerHash params:")
     console.log(req.body.hashtoken);
     console.log(req.body.hash);
+    services.unlockAccount();
     idContract.AddHash(req.body.hashtoken, req.body.hash, {gas: params.gas})
     .then(function(result){
       res.status(200).json({result:result, error:null});
@@ -206,6 +207,7 @@ app.post('/id/GiveTokenPerm', loadUser,
     console.log("/id/GiveTokenPerm params:")
     console.log(req.body.address);
     console.log(req.body.hashtoken);
+    services.unlockAccount();
     idContract.GiveTokenPerm(req.body.address, req.body.hashtoken, {gas: params.gas})
     .then(function(result){
       res.status(200).json({result:result, error:null});
@@ -230,27 +232,13 @@ app.get('/id/RequestC', loadUser,
     }); 
   });
 
-//Request with transaction sending  
-app.get('/id/Request', loadUser,
-  function(req, res){
-    console.log("/id/Request params:")
-    console.log(req.query.hashtoken);
-    console.log(req.query.hash);
-    idContract.Request(req.query.hash, req.query.token, {gas: params.gas})
-    .then(function(result){
-      res.status(200).json({result:result, error:null});
-    })
-    .catch(function(error){
-      res.status(500).json({ result: null, error: error.message});
-    }); 
-  });
-
 //Request with permission control
 app.get('/id/RequestP', loadUser,
   function(req, res){
     console.log("/id/RequestP params:")
     console.log(req.query.hashtoken);
     console.log(req.query.hash);
+    services.unlockAccount();
     idContract.RequestP(req.query.hash, req.query.token, {gas: params.gas})
     .then(function(result){
       idContract.RequestC(req.query.hashtoken, req.query.hash, {gas: params.gas})
@@ -265,6 +253,7 @@ app.get('/id/RequestP', loadUser,
       res.status(500).json({ result: null, error: error.message});
     }); 
   });
+
   
 app.get('/teapot',
   function(req,res){
