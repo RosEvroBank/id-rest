@@ -6,6 +6,6 @@
     "enable_https": false,    
     "debug": "id",
     "admin_contract_address": "0x5d07a7caf1346b91b5ace51acc09a1a8ecc38db9",
-    "id_contract_address": "0x46765225f7fcaa6d335a65d2567b5f2f98ddbe73 ",
+    "id_contract_address": "0x46765225f7fcaa6d335a65d2567b5f2f98ddbe73",
     "gas": 1000000
 }

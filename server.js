@@ -239,7 +239,7 @@ app.get('/id/RequestP', loadUser,
     console.log(req.query.hashtoken);
     console.log(req.query.hash);
     services.unlockAccount();
-    idContract.RequestP(req.query.hash, req.query.token, {gas: params.gas})
+    idContract.RequestP(req.query.hash, req.query.hashtoken, {gas: params.gas})
     .then(function(result){
       idContract.RequestC(req.query.hashtoken, req.query.hash, {gas: params.gas})
       .then(function(result){

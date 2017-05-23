@@ -181,7 +181,8 @@ var accountconfig = require("../accountconfig/accountconfig.json");
     var Services = Services || (function(common){
         common.debug(`Starting Administration module.`);        
         return {
-        waitTx: common.waitTx
+        waitTx: common.waitTx,
+        unlockAccount: common.unlockAccount
         }
     })(Common);    
     
