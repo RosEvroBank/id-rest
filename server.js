@@ -21,33 +21,31 @@ var uuid = require("uuid");
 var port = params.port || 8080;
 var https_port = params.https_port || 443;
 var use_https = params.enable_https;
+var use_token = params.enable_token;
 
 if (use_https){
-/**
- * Configure ssl keys
- */
-var privateKeyFile = params.private_key_file;
-var certificateFile = params.certificate_file;
+    /**
+     * Configure ssl keys
+     */
+    var privateKeyFile = params.private_key_file;
+    var certificateFile = params.certificate_file;
 
-//console.log(privateKeyFile);
-//console.log(certificateFile);
-var privateKey  = fs.readFileSync(privateKeyFile, 'utf8');
-var certificate = fs.readFileSync(certificateFile, 'utf8');
-var credentials = {key: privateKey, cert: certificate};
+    //console.log(privateKeyFile);
+    //console.log(certificateFile);
+    var privateKey  = fs.readFileSync(privateKeyFile, 'utf8');
+    var certificate = fs.readFileSync(certificateFile, 'utf8');
+    var credentials = {key: privateKey, cert: certificate};
 }
 
 var helmet = require('helmet');
 
 // Create a new Express application.
 var app = express();
-
-
 app.use(require('body-parser').urlencoded({ extended: true }));
 
 //Security
 app.use(helmet());
 app.disable('x-powered-by');
-
 
 function createToken(user){
   return jwt.sign({login: user.login}, accountconfig.secret, { expiresIn: accountconfig.expiresIn });
@@ -59,63 +57,86 @@ app.post('/auth', function (req, res) {
   var password = req.body.password;
   var auth = false;
   console.log(req.body.login);  
-  if (req.body.login) {
-    if( login != void 0 && password != void 0 )
-    {
-      console.log("auth");
-      var user = db('users').find({login: login});
-      if (user){        
-        auth = user.pwd == password;
-        if (auth){
-          res.status(201).send({ token: createToken(user) });          
+  if (enable_token){
+    if (req.body.login) {
+      if( login != void 0 && password != void 0 )
+      {
+        console.log("auth");
+        var user = db('users').find({login: login});
+        if (user){        
+          auth = user.pwd == password;
+          if (auth){
+            res.status(201).send({ token: createToken(user) });          
+          } else {
+              res.status(400).json({error: "Invalid <password>."});    
+          }
         } else {
-            res.status(500).json({error: "Invalid <password>."});    
+          res.status(400).json({result: null, error: "User with login <"+ login +"> not found."});
         }
       } else {
-        res.status(500).json({error: "User with login <"+ login +"> not found."});
+        res.status(400).json({result: null, error: "Parameters <login> or <password> not found."});
       }
-    } else {
-      res.status(500).json({error: "Parameters <login> or <password> not found."});
     }
-  }    
+  } else {
+    res.status(400).json({result: null, error: "Authentication with Token not enable. Use password authentication."});
+  }      
 });
 
 function loadUser(req, res, next) {
    console.log('loadUser');
-   
-   var token = null;
-   if (req.method === "POST"){
-     token = req.body.token;
-   } else {
-     if (req.method === "GET"){
-       token = req.query.token;
+   if (enable_token) {
+     var token = null;
+     if (req.method === "POST"){
+       token = req.body.token;
+     } else {
+       if (req.method === "GET"){
+         token = req.query.token;
+       }
      }
-   }
-   
-   if (token) {
-     var login = jwt.verify(token, accountconfig.secret);
-     console.log(login);
-     if (login) {
-       var user = db('users').find({login: login.login});
-       console.log(user);
-       if (user) {
+     
+     if (token) {
+       var login = jwt.verify(token, accountconfig.secret);
+       console.log(login);
+       if (login) {
+         var user = db('users').find({login: login.login});
          console.log(user);
-         next();
+         if (user) {
+           console.log(user);
+           next();
+         } else {
+             res.status(400).json({result: null, error:'Please login!'});
+         }
        } else {
-          res.status(200).json({result: null, error:'Please login!'});
+           res.status(400).json({result: null, error:'Please login!'});
        }
      } else {
-        res.status(200).json({result: null, error:'Please login!'});
+       res.status(400).json({result: null, error:'Parameter <token> not found.'});
      }
    } else {
-     res.status(200).json({result: null, error:'Parameter <token> not found.'});
-   }
+     var password = null;
+     if (req.method === "POST"){
+       password = req.body.password;
+     } else {
+       if (req.method === "GET"){
+         password = req.query.password;
+       }
+     }
+
+     if (password) {
+       if (password === accountconfig.password) {
+         next();
+       } else {
+         res.status(400).json({result: null, error: 'Password incorrect.'});
+       }
+     } else {
+       res.status(400).json({result: null, error: 'Parameter <password> not found.'});
+     }
+   }   
 }  
 
 app.get('/test', loadUser, 
 function(req, res){ 
-  console.log("test");  
-  console.log(crypto.createHash('sha256').update("test").digest('hex'));
+  console.log("test");    
   res.setHeader('Content-Type', 'text/html');
     res.write('<p>login success </p>');
     res.end();

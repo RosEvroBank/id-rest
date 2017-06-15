@@ -4,6 +4,7 @@
     "port":80,
     "https_port":443,    
     "enable_https": false,    
+    "enable_token": false,
     "debug": "id",
     "admin_contract_address": "0x5d07a7caf1346b91b5ace51acc09a1a8ecc38db9",
     "id_contract_address": "0x46765225f7fcaa6d335a65d2567b5f2f98ddbe73",
