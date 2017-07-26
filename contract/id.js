@@ -116,7 +116,7 @@ var db = flat('events.json', { storage: storage });
         {
             //throw new Error("Can't get current account for call smart-contract functions. Call 'set DEFAULT_CONTRACT' before...");
         }        
-        web3.eth.defaultAccount = web3.eth.accounts[0] || accountconfig.accountId;
+        web3.eth.defaultAccount = accountconfig.accountId || web3.eth.accounts[0];
         debug(`Default account: ${web3.eth.defaultAccount}`);
 
         /**
@@ -166,19 +166,19 @@ var db = flat('events.json', { storage: storage });
     var id = id || (function(common){
         common.debug(`Starting identification module.`);        
         
-        // var idEvent = common.idContract.allEvents({}, {fromBlock: 0, toBlock: 'latest'});
-        // //fromBlock: 0, toBlock: 'latest'
-		// common.debug("event create");
-		// idEvent.watch(function(err, result) {
-		//     if (err) {
-		//         common.debug(err);
-        //         common.debug("eventerror");
-		//         return;
-		//     }
-		//     common.debug("event");
-        //     common.debug(result);
-        //     db('events').push(result);            
-        // });
+        var idEvent = common.idContract.allEvents({}, {fromBlock: 0, toBlock: 'latest'});
+        //fromBlock: 0, toBlock: 'latest'
+		common.debug("event create");
+		idEvent.watch(function(err, result) {
+		    if (err) {
+		        common.debug(err);
+                common.debug("eventerror");
+		        return;
+		    }
+		    common.debug("event");
+            common.debug(result);
+            db('events').push(result);            
+        });
 
         return {
             address: function() {

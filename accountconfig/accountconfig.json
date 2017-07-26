@@ -3,6 +3,6 @@
     "password": "",
     "rpc_url": "http://localhost:8545",
     "secret": "",
-    "password": "",
+    "id_rest_password": "q12345",
     "expTime": 28800
 }

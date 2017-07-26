@@ -84,7 +84,7 @@ app.post('/auth', function (req, res) {
 
 function loadUser(req, res, next) {
    console.log('loadUser');
-   if (enable_token) {
+   if (params.enable_token) {
      var token = null;
      if (req.method === "POST"){
        token = req.body.token;
@@ -121,9 +121,9 @@ function loadUser(req, res, next) {
          password = req.query.password;
        }
      }
-
+     console.log('password: ' + password);
      if (password) {
-       if (password === accountconfig.password) {
+       if (password === accountconfig.id_rest_password) {
          next();
        } else {
          res.status(400).json({result: null, error: 'Password incorrect.'});
@@ -148,7 +148,6 @@ app.post('/test', loadUser, function(req, res){
     res.write('<p>login success </p>');
     res.end();
 });
-
 
 //Is transaction in block
 app.get('/waitTx', loadUser,
@@ -176,6 +175,7 @@ app.get('/id/getParticipantsList', loadUser,
         participantsJSON.push(participantJSON);
       }        
   } 
+  res.setHeader("Access-Control-Allow-Origin", "*");  
   res.status(200).json(participantsJSON);
 });
 
@@ -190,6 +190,20 @@ app.get('/id/getToken', loadUser,
       res.status(500).json({error: 'Parameter <txHash> not found'});
     }
 });
+
+//Get my address
+app.get('/id/myaddress', loadUser, 
+  function(req, res){    
+    console.log('/id/myaddress');
+    result = accountconfig.accountId;
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    if (result){      
+      res.status(200).json({result:result, error:null});
+    } else {    
+      res.status(500).json({ result: null, error: "Config. parameter <id_rest_password> not found."});
+    }
+});
+
 
 //Get address of administartion contract
 app.get('/id/address', loadUser, 
@@ -260,7 +274,7 @@ app.get('/id/RequestP', loadUser,
     console.log(req.query.hashtoken);
     console.log(req.query.hash);
     services.unlockAccount();
-    idContract.RequestP(req.query.hash, req.query.hashtoken, {gas: params.gas})
+    idContract.RequestP(req.query.hashtoken, req.query.hash, {gas: params.gas})
     .then(function(result){
       idContract.RequestC(req.query.hashtoken, req.query.hash, {gas: params.gas})
       .then(function(result){
