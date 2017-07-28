@@ -1,6 +1,5 @@
 {
     "accountId": "",
-    "password": "",
     "rpc_url": "http://localhost:8545",
     "secret": "",
     "id_rest_password": "q12345",
